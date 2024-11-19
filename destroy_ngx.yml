@@ -1,0 +1,32 @@
+---
+- name: "destroy nginx"
+  hosts:
+    - nginx
+    - proxy
+  gather_facts: no
+  tasks:
+    - name: "stop nginx"
+      service:
+        name: nginx
+        state: stopped
+      tags: stop
+    - name: "remove nginx"
+      yum:
+        name: nginx
+        state: removed
+      tags: remove
+    - name: "delete nginx-related directories"
+      tags: delete
+      file:
+        dest: "{{ item }}"
+        state: absent
+      with_items:
+        - /etc/nginx/
+        - /usr/local/nginx
+        - /var/www
+    - name: "delete user ruoyi"
+      tags: rmuser
+      user:
+        name: ruoyi
+        state: absent
+

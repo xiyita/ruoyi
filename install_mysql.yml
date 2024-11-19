@@ -1,0 +1,103 @@
+---
+- name: "install mysql init mysql"
+  hosts: mysql
+  gather_facts: no
+  gather_timeout: 10
+  tasks:
+  - name: "intsall rsync"
+    yum:
+      name: rsync
+      state: installed
+  - name: "copy mysql insatll package"
+    synchronize:
+      src: file/mysql-5.7.40-el7-x86_64.tar.gz
+      dest: /tmp/
+  - name: "remove mariadb"
+    tags: remove_mariadb
+    yum:
+      name: mariadb-libs
+      state: absent
+  - name: "tar mysql package"
+    tags: tar_mysql
+    shell: tar -xf /tmp/mysql-5.7.40-el7-x86_64.tar.gz -C /usr/local/
+    args:
+      warn: false
+    notify: "delete mysql package"
+  - name: "extract mysql finish"
+    shell: mv /usr/local/mysql-5.7.40-el7-x86_64/ /usr/local/mysql5.7
+    args:
+      warn: false
+  - name: "create user mysql"
+    tags: new_user
+    user:
+      name: mysql
+      shell: /sbin/nologin
+      create_home: no
+      system: yes
+      state: present
+  - name: "create mysql dir"
+    tags: mkdir_mysqldir
+    file:
+      dest: "{{item}}"
+      owner: mysql
+      group: mysql
+      state: directory
+    with_items:
+      - "/usr/local/mysql5.7/data"
+      - "/var/log/mysqld"
+      - "/var/run/mysqld"
+  - name: "change mode mysql dir"
+    tags: mode_mysql
+    file:
+      dest: /usr/local/mysql5.7
+      owner: mysql
+      group: mysql
+      mode: 0755
+
+  - name: "create /var/run/mysqld always"
+    tags: create_pid
+    shell: echo 'd /var/run/mysqld/ 0755 mysql mysql -' > /usr/lib/tmpfiles.d/mysql.conf
+    args:
+      warn: false
+  - name: "make mysql env_variable"
+    tags: mysql_env
+    copy:
+      src: file/mysqld.sh
+      dest: /etc/profile.d/
+  - name: "source /etc/profile"
+    tags: source_env
+    shell: source /etc/profile
+    args:
+      warn: false
+  - name: "mysql start file"
+    copy:
+      src: file/mysqld
+      dest: /etc/init.d/mysqld
+      owner: mysql
+      group: mysql
+      mode: '0755'
+  - name: "mysql main file"
+    copy:
+      src: file/my.cnf
+      dest: /etc/my.cnf
+      owner: mysql
+      group: mysql
+      mode: '0755'
+  - name: "copy sql data"
+    copy:
+      src: "{{item}}"
+      dest: /tmp/
+    with_items:
+      - file/ry_20231130.sql 
+      - file/quartz.sql
+  - name: "run init mysql"
+    tags: init_mysql
+    script: "./init_mysql.sh"
+    args:
+      executable: /bin/bash
+  handlers:
+  - name: "delete mysql package"
+    tags: delete_mysql_package
+    shell: rm -rf /tmp/mysql-5.7.40-el7-x86_64.tar.gz
+    args:
+      warn: false

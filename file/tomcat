@@ -1,0 +1,24 @@
+#! /bin/bash
+if [ $# -ne 1 ]
+then
+    echo "use error.  use : tomcat  start/stop/restart" >&2;
+    exit 1
+fi
+case $1 in
+    start)
+        /usr/local/tomcat-9.0.96/bin/startup.sh
+        ;;
+    stop)
+        /usr/local/tomcat-9.0.96/bin/shutdown.sh 
+        ;;
+    restart)
+        /usr/local/tomcat-9.0.96/bin/shutdown.sh
+        sleep  0.2
+        /usr/local/tomcat-9.0.96/bin/startup.sh
+        ;;
+    *)
+        echo   "tomcat  start/stop/restart"
+        exit 2
+        ;;
+esac
+exit 0

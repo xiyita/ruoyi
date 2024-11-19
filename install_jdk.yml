@@ -1,0 +1,35 @@
+---
+- name: "deploy java env"
+  hosts: tomcat
+  gather_facts: no
+  tasks:
+    - name: "install rsync"
+      yum:
+        name: rsync
+        state: installed
+    - name: "copy jdk package"
+      synchronize:
+        src: file/jdk-8u201-linux-x64.tar.gz
+        dest: /tmp/
+    - name: "tar jdk package"
+      shell: tar -xf /tmp/jdk-8u201-linux-x64.tar.gz -C /usr/local
+      args:
+        warn: no
+      notify: "tar finish delete package"
+    - name: "rename jdk"
+      shell: mv /usr/local/jdk1.8.0_201 /usr/local/jdk1.8
+      args:
+        warn: no
+    - name: "java env file"
+      copy:
+        src: file/java.sh
+        dest: /etc/profile.d/
+    - name: "source env"
+      shell: source /etc/profile
+      args:
+        warn: no
+  handlers:
+  - name: "tar finish delete package"
+    file:
+      dest: /tmp/jdk-8u201-linux-x64.tar.gz
+      state: absent 

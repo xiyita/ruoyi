@@ -1,0 +1,113 @@
+---
+- name: "install nginx"
+  hosts:
+    - nginx
+    - proxy
+  gather_facts: false
+  gather_timeout: 10
+  tasks:
+    - name: "config nginx yum repo file"
+      tags: install
+      yum_repository:
+        file: nginx
+        name: nginx_repo
+        description: "this is nginx warehouse source"
+        baseurl: http://nginx.org/packages/centos/\$releasever/\$basearch/
+        enabled: yes
+        gpgcheck: no
+        state: present
+
+    - name: "yum install nginx"
+      tags: install
+      yum:
+        name: nginx
+        state: installed
+
+    - name: "create user:ruoyi for nginx to use"
+      tags: install
+      user:
+        name: ruoyi
+        shell: /sbin/nologin
+        uid: 1234
+        state: present
+    - name: "install nfs"
+      tags: install
+      yum:
+        name:
+          - nfs-utils
+          - rsync
+        state: installed
+    - name: "delete nginx main config file"
+      tags: delete
+      file:
+        dest: /etc/nginx/nginx.conf
+        state: absent
+
+    - name: "delete nginx other config file"
+      tags: delete
+      shell: rm -rf /etc/nginx/conf.d/*
+      args:
+        warn: no
+
+- name: "deploy nginx web ruoyi env"
+  hosts: nginx
+  gather_facts: true
+  tasks:
+    - name: "copy nginx main config file"
+      tags: web
+      template:
+        src: web/nginx.conf
+        dest: /etc/nginx/
+
+    - name: "copy nginx other config file"
+      tags: web
+      template:
+        src: "{{item}}"
+        dest: /etc/nginx/conf.d/
+      with_items:
+        - web/conf.d/81.conf
+        - web/conf.d/82.conf
+
+    - name: "create directory to run web code"
+      tags: web
+      file:
+        dest: "{{item}}"
+        state: directory
+        recurse: yes
+      with_items:
+        - /var/www/ruoyi/html
+      notify: "change ruoyi dir mode"
+  handlers:
+    - name: "change ruoyi dir mode"
+      file:
+        dest: /var/www/ruoyi
+        recurse: yes
+        mode: 0755
+        owner: nginx
+        group: nginx
+
+- name: "deploy nginx proxy"
+  hosts: proxy
+  gather_facts: true
+  tasks:
+    - name: "copy nginx main config file"
+      tags: proxy
+      template:
+        src: proxy/nginx.conf
+        dest: /etc/nginx/
+    - name: "copy nginx other config file"
+      tags: proxy
+      template:
+        src: proxy/default.conf
+        dest: /etc/nginx/conf.d/
+- name: "deploy nginx proxy"
+  hosts:
+    - proxy
+    - nginx
+  gather_facts: false
+  tasks:
+    - name: "start nginx"
+      tags: start
+      service:
+        name: nginx
+        state: started

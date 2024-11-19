@@ -1,0 +1,20 @@
+---
+- name: "destroy tomcat"
+  hosts: tomcat
+  gather_facts: no
+  tasks:
+    - name: "stop tomcat"
+      tags: stop
+      shell: /usr/local/tomcat-9.0.96/bin/shutdown.sh
+      args:
+        warn: no
+    - name: "delete file"
+      tags: delete
+      file:
+        dest: "{{ item }}"
+        state: absent
+      with_items:
+        - /usr/bin/tomcat
+        - /usr/local/tomcat-9.0.96
+        - /etc/profile.d/tomcat.sh
+        - /var/www

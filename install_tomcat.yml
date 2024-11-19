@@ -1,0 +1,53 @@
+---
+- name: "destroy nginx"
+  hosts: tomcat
+  gather_facts: no
+  tasks:
+    - name: "copy tomcat package"
+      synchronize:
+        src: file/apache-tomcat-9.0.96.tar.gz
+        dest: /tmp/
+    - name: "tar tomcat package"
+      shell: tar -xf /tmp/apache-tomcat-9.0.96.tar.gz -C /usr/local/
+      args:
+        warn: no
+    - name: "rename tomcat"
+      shell: mv /usr/local/apache-tomcat-9.0.96 /usr/local/tomcat-9.0.96
+      args:
+        warn: no
+      notify: "tar finish delete package"
+    - name: "tomcat env"
+      copy:
+        src: file/tomcat.sh
+        dest: /etc/profile.d/
+    - name: "source env"
+      shell: source /etc/profile
+      args:
+        warn: no
+    - name: "tomcat start shell"
+      copy:
+        src: file/tomcat
+        dest: /usr/bin/
+        mode: '0755'
+    - name: "create directory to run web code"
+      file:
+        dest: /var/www/ruoyi
+        state: directory
+        recurse: yes
+    - name: "delete main conf"
+      file:
+        dest: /usr/local/tomcat-9.0.96/conf/server.xml
+        state: absent
+    - name: "copy main conf"
+      copy:
+        src: file/server.xml
+        dest: /usr/local/tomcat-9.0.96/conf/
+    - name: "start tomcat"
+      shell: /usr/local/tomcat-9.0.96/bin/startup.sh
+      args:
+        warn: no
+  handlers:
+  - name: "tar finish delete package"
+    file:
+      dest: /tmp/apache-tomcat-9.0.96.tar.gz
+      state: absent

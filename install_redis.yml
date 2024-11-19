@@ -1,0 +1,71 @@
+---
+- name: "install redis"
+  hosts: redis
+  gather_facts: no
+  tasks:
+    - name: "install redis reliance"
+      tags: "reliance"
+      yum:
+        name:
+          - gcc-c++
+          - tcl.x86_64
+          - python3.x86_64
+          - rsync
+        state: installed
+    - name: "copy redis package"
+      synchronize:
+        src: file/redis-stable.tar.gz
+        dest: /tmp/
+    - name: "tar redis"
+      shell: tar -xf /tmp/redis-stable.tar.gz -C /tmp/
+      args:
+        warn: no
+    - name: "cd redis-stable"
+      shell: cd /tmp/redis-stable
+      args:
+        warn: no
+    - name: "make redis" 
+      shell: |
+        cd /tmp/redis-stable
+        make MALLOC=libc
+      args:
+        warn: no
+    - name: "install redis"
+      shell: |
+        cd /tmp/redis-stable
+        make PREFIX=/usr/local/redis install
+      args:
+        warn: no
+      notify: "delete redis package"
+    - name: "copy main config"
+      copy:
+        src: file/redis.conf
+        dest: /etc/
+    - name: "copy redis env"
+      copy:
+        src: file/redis.sh
+        dest: /etc/profile.d/
+    - name: "source env"
+      shell: source /etc/profile
+      args:
+        warn: no
+    - name: "change source limit"
+      shell: echo "net.core.somaxconn=511" >> /etc/systcl.conf
+      args:
+        warn: no
+    - name: "source limit env"
+      shell: sysctl -p
+      args:
+        warn: no
+    - name: "start redis"
+      shell: /usr/local/redis/bin/redis-server /etc/redis.conf
+      args:
+        warn: no
+  handlers:
+   - name: "delete redis package"
+     file:
+       dest: "{{item}}"
+       state: absent
+     with_items:
+       - /tmp/redis-stable.tar.gz
+       - /tmp/redis-stable

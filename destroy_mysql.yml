@@ -1,0 +1,21 @@
+---
+- name: "destroy mysql"
+  hosts: mysql
+  gather_facts: no
+  tasks:
+  - name: "stop mysql"
+    shell: /etc/init.d/mysqld stop
+    args:
+      warn: false
+    tags: ["destroy","stop"] 
+  - name: "delete mysql all file"
+    shell: rm -rf /var/log/mysqld /var/run/mysqld /usr/local/mysql5.7 /etc/my.cnf
+    args:
+      warn: false
+    tags: ["destroy","delete"] 
+  - name: "delete user mysql"
+    tags: ["destroy","rm_user"] 
+    user:
+      name: mysql
+      state: absent
+      remove: yes

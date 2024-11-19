@@ -1,0 +1,20 @@
+---
+- name: "destroy redis"
+  hosts: redis
+  gather_facts: no
+  tasks:
+    - name: "stop redis"
+      tags: "stop"
+      shell: /usr/local/redis/bin/redis-cli shutdown
+      args:
+        warn: no
+    - name: "delete"
+      file:
+        dest: "{{item}}"
+        state: absent
+      with_items:
+        - /var/lib/redis
+        - /var/log/redis
+        - /usr/local/redis
+        - /etc/profile.d/redis.sh
+        - /etc/redis
