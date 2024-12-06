@@ -1,4 +1,6 @@
 # 若依前后端分离版CI/CD部署
+#### 注意：仓库中并没有对应的安装包，所以你要自己获取。apache-tomcat-9.0.96.tar.gz、jdk-8u201-linux-x64.tar.gz、mysql-5.7.40-el7-x86_64.tar.gz、redis-stable.tar.gz
+#### 如果你实在找不到就邮箱联系我吧。xiyita0509@163.com
 ### 项目描述
 
 1.编写 Ansible Playbook，实现若依框架的自动化环境构建与销毁，涵盖 Nginx 代理、后端 Tomcat、Redis、前端 Nginx Web 和 MySQL 配置，支持一键部署与清理。同时，基于 Jenkins 和 GitLab SCM，构建自动化 CI/CD 流程，前后端打包分别在各自节点执行，提升系统开发与部署效率。
