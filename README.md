@@ -21,6 +21,7 @@
 
 ## 项目实现过程
 ### 一、主机安排
+
 nginx代理 192.168.50.142
 
 nginx前端 192.168.50.144:81/82
@@ -37,7 +38,8 @@ Gitlab 192.168.50.162
 
 编程人员xiyita 192.168.50.161
 
-所有主机需要进行的操作
+### 所有主机需要进行的操作
+
 1.A记录解析
 
 2.受ansible控制的主机都需要创建ansible账号密码、sudo提权ansible账号
@@ -62,7 +64,8 @@ xiyita用户账号与gitlab端的xiyita用户账号ssh免密
 
 7.Gitlab-runner流水线文件
 
-8.nginx代理配置文件、nginx-web配置文件、jdk1.8安装包、tomcat安装包、tomcat server.xml配置文件、tomcat控制启动脚本、redis安装包、redis配置文件（redis.conf）、mysql安装包、mysql控制启动脚本、mysql配置文件(my.cnf)、需要注入数据的.sql文件、各种环境脚本
+### 其他所需文件
+nginx代理配置文件、nginx-web配置文件、jdk1.8安装包、tomcat安装包、tomcat server.xml配置文件、tomcat控制启动脚本、redis安装包、redis配置文件（redis.conf）、mysql安装包、mysql控制启动脚本、mysql配置文件(my.cnf)、需要注入数据的.sql文件、各种环境脚本
 
 ### 若依前后端分离版代码
 #### 前端代码需要修改的地方
