@@ -2,7 +2,9 @@
 ### 项目描述
 
 1.编写 Ansible Playbook，实现若依框架的自动化环境构建与销毁，涵盖 Nginx 代理、后端 Tomcat、Redis、前端 Nginx Web 和 MySQL 配置，支持一键部署与清理。同时，基于 Jenkins 和 GitLab SCM，构建自动化 CI/CD 流程，前后端打包分别在各自节点执行，提升系统开发与部署效率。
+
 2.CI/CD 自动化流程：基于 Jenkins 和 GitLab SCM Pipeline，构建自动化的 CI/CD 流程，用于若依管理系统的持续集成与部署。
+
 3.前后端分离的 CI/CD 实现：通过 GitLab + GitLab Runner，实现前后端的分离构建与部署，确保前端与后端分别在对应的节点执行打包和部署，提升开发与部署效率。
 
 ### 基于Jenkins SCM pipeline实现若依项目架构图
@@ -15,16 +17,26 @@
 ## 项目实现过程
 ### 一、主机安排
 nginx代理 192.168.50.142
+
 nginx前端 192.168.50.144:81/82
+
 tomcat后端 192.168.50.147/148:8080
+
 redis 192.168.50.138
+
 mysql 192.168.50.128
+
 Jenkins+ansible 192.168.50.161
+
 Gitlab 192.168.50.162
+
 编程人员xiyita 192.168.50.161
+
 所有主机需要进行的操作
 1.A记录解析
+
 2.受ansible控制的主机都需要创建ansible账号密码、sudo提权ansible账号
+
 3.ansible主机root账号与所有受控机做ssh免密
 
 ### 二、编程人员需要提交给gitlab
@@ -32,12 +44,19 @@ xiyita用户账号与gitlab端的xiyita用户账号ssh免密
 
 ### （1）ansible-playbook剧本
 1.Nginx：安装部署nginx剧本、若依代理剧本、若依web剧本、摧毁nginx剧本
+
 2.Tomcat：安装部署tomcat剧本、若依环境剧本、摧毁tomcat剧本
+
 3.Java环境：安装部署java环境
+
 4.Redis：安装部署redis剧本、摧毁redis剧本
+
 5.Mysql：安装部署mysql剧本、数据库初始化+若依环境脚本、摧毁mysql剧本
+
 6.Jenkinsfile流水线文件
+
 7.Gitlab-runner流水线文件
+
 8.nginx代理配置文件、nginx-web配置文件、jdk1.8安装包、tomcat安装包、tomcat server.xml配置文件、tomcat控制启动脚本、redis安装包、redis配置文件（redis.conf）、mysql安装包、mysql控制启动脚本、mysql配置文件(my.cnf)、需要注入数据的.sql文件、各种环境脚本
 
 ### 若依前后端分离版代码
