@@ -1,6 +1,8 @@
 # 若依前后端分离版CI/CD部署
-#### 注意：仓库中并没有对应的安装包，所以你要自己获取以下安装包
+#### 注意：仓库中并没有对应的安装包，所以你要自己获取以下安装包，放在file目录下
 ##### apache-tomcat-9.0.96.tar.gz、jdk-8u201-linux-x64.tar.gz、mysql-5.7.40-el7-x86_64.tar.gz、redis-stable.tar.gz
+![image](https://github.com/user-attachments/assets/cf8bf9f4-dc02-4ee4-ad40-20ff1982c39e)
+
 #### 如果你实在找不到就邮箱联系我吧。xiyita0509@163.com
 ### 项目描述
 
